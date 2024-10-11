@@ -1,107 +1,112 @@
-package e2;
+package e2 ;
+
 
 public class KeyPad {
-        private final char[][] keypad;
-        private final int rows;
-        private final int cols;
-
-        // Constructor que inicializa el teclado
-        public KeyPad(boolean fillByRows, int rows, int cols) {
-            this.rows = rows;
-            this.cols = cols;
-            this.keypad = new char[rows][cols];
-            fillKeypad(fillByRows);
+    public static boolean isValidKeyPad(char[][] keyPad) {
+        if (keyPad == null) {
+            return false;
         }
 
-    public static boolean isValidKeyPad(char[][] keyPad1) {
-        return false;
-    }
+        int rows = keyPad.length;
+        int cols = -1;
 
-    public static boolean areValidMovements(String[] wrongNumber) {
-        return false;
-    }
+        // Verificar si el teclado es rectangular
+        for (int i = 0; i < rows; i++) {
+            if (keyPad[i]==null ) {
+                return false;
+            }
+            if(cols==-1){
+                cols=keyPad[i].length;
+            }else if(keyPad[i].length!=cols){
+                return false;
+            }
 
-    public static String obtainCode(char[][] keyPad7, String[] input0) {
-        return "";
-    }
+        }
 
-    // Método para llenar el teclado
-        private void fillKeypad(boolean fillByRows) {
-            String sequence = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            int index = 0;
+        // Verificar si el número en la esquina superior izquierda es el 1
+        if (keyPad[0][0] != '1') {
+            return false;
+        }
 
-            if (fillByRows) {
-                // Llenar el teclado por filas
-                for (int i = 0; i < rows; i++) {
-                    for (int j = 0; j < cols; j++) {
-                        if (index < sequence.length()) {
-                            keypad[i][j] = sequence.charAt(index++);
-                        }
+        // Verificar si la secuencia de números y letras es correcta
+        int num = 1;
+        for(int i = 0; i < rows; i++) {
+
+            for (int j = 0; j < keyPad[i].length; j++) {
+                if (num <= 9) {
+                    if (keyPad[i][j] != (char) (num + '0')) {
+                        return false;
                     }
-                }
-            } else {
-                // Llenar el teclado por columnas
-                for (int j = 0; j < cols; j++) {
-                    for (int i = 0; i < rows; i++) {
-                        if (index < sequence.length()) {
-                            keypad[i][j] = sequence.charAt(index++);
-                        }
+                    num++;
+                } else {
+                    if (keyPad[i][j] != (char) (num - 10 + 'A')) {
+                        return false;
                     }
+                    num++;
                 }
             }
         }
 
-        // Método para ejecutar los movimientos y obtener la clave
-        public String getKeyFromMovements(String movements) {
-            StringBuilder key = new StringBuilder();
-            int x = 0; // Fila inicial
-            int y = 0; // Columna inicial
+        return true;
+    }
 
-            // Añadimos el primer número de la clave
-            key.append(keypad[x][y]);
+    public static boolean areValidMovements(String[] movements) {
+        if (movements == null) {
+            return false;
+        }
 
-            // Procesar cada movimiento
-            for (char move : movements.toCharArray()) {
-                switch (move) {
+        for (String movement : movements) {
+            if (movement == null || movement.isEmpty()) {
+                return false;
+            }
+
+            for (char c : movement.toCharArray()) {
+                if (c != 'U' && c != 'D' && c != 'L' && c != 'R') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static String obtainCode(char[][] keyPad, String[] movements) {
+        
+        int rows = keyPad.length;
+        int cols = keyPad[0].length;
+        int row = 0;
+        int col = 0;
+        StringBuilder code = new StringBuilder();
+
+        for (String movement : movements) {
+            for (char c : movement.toCharArray()) {
+                switch (c) {
                     case 'U':
-                        if (x > 0) x--; // Movimiento hacia arriba
+                        if (row > 0) {
+                            row--;
+                        }
                         break;
                     case 'D':
-                        if (x < rows - 1) x++; // Movimiento hacia abajo
+                        if (row < rows - 1) {
+                            row++;
+                        }
                         break;
                     case 'L':
-                        if (y > 0) y--; // Movimiento hacia la izquierda
+                        if (col > 0) {
+                            col--;
+                        }
                         break;
                     case 'R':
-                        if (y < cols - 1) y++; // Movimiento hacia la derecha
+                        if (col < cols - 1) {
+                            col++;
+                        }
                         break;
                 }
-                // Añadir el número correspondiente en la nueva posición
-                key.append(keypad[x][y]);
             }
 
-            return key.toString();
+            code.append(keyPad[row][col]);
         }
 
-        public static void main(String[] args) {
-            // Crear un teclado de 4 filas y 3 columnas, llenado por filas
-            KeyPad keypad = new KeyPad(true, 4, 3);
-
-            // Definir las secuencias de movimientos
-            String[] movements = {
-                    "RD",     // Para el primer número
-                    "DRUU",   // Para el segundo número
-                    "LLD",    // Para el tercer número
-                    "D"       // Para el cuarto número
-            };
-
-            // Ejecutar los movimientos y construir la clave
-            StringBuilder finalKey = new StringBuilder();
-            for (String movement : movements) {
-                finalKey.append(keypad.getKeyFromMovements(movement));
-            }
-
-            // Mostrar la clave final
-            System.out.println("La clave es: " + finalKey);
-        }
+        return code.toString();
+    }
 }
