@@ -7,17 +7,17 @@ public class KeyPad {
             return false;
         }
 
-        int rows = keyPad.length;
-        int cols = -1;
+        int filas = keyPad.length;
+        int collum = -1;
 
         // Verificar si el teclado es rectangular
-        for (int i = 0; i < rows; i++) {
+        for (int i = 0; i < filas; i++) {
             if (keyPad[i]==null ) {
                 return false;
             }
-            if(cols==-1){
-                cols=keyPad[i].length;
-            }else if(keyPad[i].length!=cols){
+            if(collum==-1){
+                collum=keyPad[i].length;
+            }else if(keyPad[i].length!=collum){
                 return false;
             }
 
@@ -30,7 +30,7 @@ public class KeyPad {
 
         // Verificar si la secuencia de números y letras es correcta
         int num = 1;
-        for(int i = 0; i < rows; i++) {
+        for(int i = 0; i < filas; i++) {
 
             for (int j = 0; j < keyPad[i].length; j++) {
                 if (num <= 9) {
@@ -71,10 +71,14 @@ public class KeyPad {
     }
 
     public static String obtainCode(char[][] keyPad, String[] movements) {
-        
-        int rows = keyPad.length;
-        int cols = keyPad[0].length;
-        int row = 0;
+        if (!isValidKeyPad(keyPad)) {
+
+            throw new IllegalArgumentException("El teclado no es válido");
+
+        }
+        int filas = keyPad.length;
+        int collum = keyPad[0].length;
+        int fila = 0;
         int col = 0;
         StringBuilder code = new StringBuilder();
 
@@ -82,12 +86,12 @@ public class KeyPad {
             for (char c : movement.toCharArray()) {
                 switch (c) {
                     case 'U':
-                        if (row > 0) {
-                            row--;
+                        if (fila > 0) {
+                            fila--;
                         }
                         break;
                     case 'D':
-                        if (row < rows - 1) {
+                        if (fila < filas - 1) {
                             row++;
                         }
                         break;
@@ -97,7 +101,7 @@ public class KeyPad {
                         }
                         break;
                     case 'R':
-                        if (col < cols - 1) {
+                        if (col < collum - 1) {
                             col++;
                         }
                         break;
